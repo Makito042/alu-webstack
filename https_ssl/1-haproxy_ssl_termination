@@ -8,6 +8,8 @@ global
 	group haproxy
 	daemon
 
+	#dhparam
+	tune.ssl.default-dh-param 2048        
 	# Default SSL material locations
 	ca-base /etc/ssl/certs
 	crt-base /etc/ssl/private
@@ -33,12 +35,12 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 
-frontend myfrontend
-	bind *:80
-	bind *:443 ssl crt /etc/haproxy/certs/www.uniqueel.tech.pem
-	default_backend myservers
-
-backend myservers
-	balance roundrobin
-	server web-01 18.209.8.52:80 check
-	server web-02 54.90.163.231:80 check
+frontend lb-frontend
+        bind *:80
+	bind *:443 ssl crt /etc/letsencrypt/live/www.makuochi.tech/makuochi.pem
+        mode http
+        default_backend lb-backend
+backend lb-backend
+        balance roundrobin
+        server web-01 18.209.8.52:80 check
+        server web-02 54.90.163.231:80 check
